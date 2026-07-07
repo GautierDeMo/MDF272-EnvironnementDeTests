@@ -1,3 +1,14 @@
+.env
+
+# IDE
 .DS_Store
+
+# NPM
 node_modules
 package-lock.json
+
+# Jest
+coverage
+
+# Realm database
+*.realm*
