@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { getRealm } from '../config/realm.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto'
 
 // Helper to format task for response
 const formatTask = (task: any) => ({
@@ -32,7 +32,7 @@ export const getTasks = async (req: Request, res: Response) => {
     const tasks = realm.objects('Task')
       .filtered('userId == $0', req.user?.id)
       .sorted('createdAt', true);
-    
+
     res.json({ success: true, tasks: tasks.map(formatTask) });
   } catch (err: any) {
     console.error(err.message);
@@ -71,7 +71,7 @@ export const createTask = async (req: Request, res: Response) => {
 
   try {
     const realm = await getRealm();
-    
+
     const tagObjects = [];
     if (tags && tags.length > 0) {
       for (const tagId of tags) {
@@ -81,10 +81,10 @@ export const createTask = async (req: Request, res: Response) => {
     }
 
     let task: any;
-    
+
     realm.write(() => {
       task = realm.create('Task', {
-        _id: uuidv4(),
+        _id: randomUUID(),
         userId: req.user?.id,
         title,
         description: description || '',
@@ -129,7 +129,7 @@ export const updateTask = async (req: Request, res: Response) => {
       if (status !== undefined) task.status = status;
       if (dueDate !== undefined) task.dueDate = dueDate ? new Date(dueDate) : null;
       if (priority !== undefined) task.priority = priority;
-      
+
       if (tags !== undefined) {
         const newTags = [];
         for (const tagId of tags) {
@@ -138,11 +138,11 @@ export const updateTask = async (req: Request, res: Response) => {
         }
         task.tags = newTags;
       }
-      
+
       if (subtasks !== undefined) {
         task.subtasks = subtasks;
       }
-      
+
       task.updatedAt = new Date();
     });
 
@@ -172,7 +172,7 @@ export const deleteTask = async (req: Request, res: Response) => {
     realm.write(() => {
       realm.delete(task);
     });
-    
+
     res.json({ success: true, message: 'Task removed' });
   } catch (err: any) {
     console.error(err.message);

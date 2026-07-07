@@ -4,17 +4,16 @@ import express, {
   type NextFunction,
 } from 'express'
 import cors from 'cors'
-import path from 'path'
 import dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import taskRoutes from './routes/tasks.js'
 import tagRoutes from './routes/tags.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenv.config()
+dotenv.config({
+  /* useful for debug */
+  // debug: true,
+  // path: '../.env',
+})
 
 const app: express.Application = express()
 

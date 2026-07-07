@@ -8,7 +8,7 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "module": "ESNext",
+    "module": "esnext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -22,7 +22,6 @@
     "noFallthroughCasesInSwitch": false,
     "noUncheckedSideEffectImports": false,
     "forceConsistentCasingInFileNames": false,
-    "baseUrl": "./",
     "paths": {
       "@/*": [
         "./src/*"
@@ -30,11 +29,12 @@
     },
     "types": [
       "node",
-      "express"
+      "express",
+      "jest"
     ]
   },
   "include": [
     "src",
     "api"
-  ]
+, "tests"  ]
 }

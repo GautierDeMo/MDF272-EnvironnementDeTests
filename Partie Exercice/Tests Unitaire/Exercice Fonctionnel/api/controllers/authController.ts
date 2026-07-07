@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
 import { getRealm } from '../config/realm.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto'
 
 const generateToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
 
   try {
     const realm = await getRealm();
-    
+
     const existingUser = realm.objects('User').filtered('email == $0', email)[0];
 
     if (existingUser) {
@@ -36,10 +36,10 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     let user: any;
-    
+
     realm.write(() => {
       user = realm.create('User', {
-        _id: uuidv4(),
+        _id: randomUUID(),
         name,
         email,
         password: hashedPassword,
@@ -114,8 +114,8 @@ export const getMe = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       user: {
         id: user._id,
         name: user.name,
