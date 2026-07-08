@@ -1,4 +1,4 @@
-import request from 'supertest'
+import request, { type Response } from 'supertest'
 import app from '../api/app'
 import { getRealm } from '../api/config/realm'
 import Realm from 'realm'
@@ -72,7 +72,7 @@ describe('/api/auth/register', () => {
       .send(newUserWithoutName)
 
     expect(response.status).toBe(400)
-    expect(JSON.parse(response.text).errors[0].msg).toBe(error)
+    expect(response.body.errors[0].msg).toBe(error)
   })
 
   test("POST - I can't register a new user if my email isn't valid", async () => {
@@ -90,7 +90,7 @@ describe('/api/auth/register', () => {
       .send(newUserWithoutValidEmail)
 
     expect(response.status).toBe(400)
-    expect(JSON.parse(response.text).errors[0].msg).toBe(error)
+    expect(response.body.errors[0].msg).toBe(error)
   })
 
   test("POST - I can't register a new user if my password has less than 6 characters", async () => {
@@ -107,7 +107,7 @@ describe('/api/auth/register', () => {
       .send(newUserWithoutLongPassword)
 
     expect(response.status).toBe(400)
-    expect(JSON.parse(response.text).errors[0].msg).toBe(error)
+    expect(response.body.errors[0].msg).toBe(error)
   })
 })
 
@@ -120,8 +120,10 @@ afterEach(async () => {
 
 describe('/api/auth/login', () => {
 
+  let registerResponse: Response
+
   beforeEach(async () => {
-    await registerUser()
+    registerResponse = await registerUser()
   })
 
   test("POST - I can login to my account", async () => {
@@ -133,9 +135,9 @@ describe('/api/auth/login', () => {
         success: true,
         token: expect.any(String),
         user: {
-          id: loginResponse.body.user.id,
-          name: loginResponse.body.user.name,
-          email: loginResponse.body.user.email
+          id: registerResponse.body.user.id,
+          name: newUser.name,
+          email: newUser.email
         }
       }
     ))
@@ -150,7 +152,7 @@ describe('/api/auth/login', () => {
       .send({ email: 'solenepingouintest.com', password: newUser.password })
 
     expect(loginResponse.status).toBe(400)
-    expect(JSON.parse(loginResponse.text).errors[0].msg).toBe(error)
+    expect(loginResponse.body.errors[0].msg).toBe(error)
   })
 
   test("POST - I can't login if my password is missing", async () => {
@@ -162,17 +164,18 @@ describe('/api/auth/login', () => {
       .send({ email: newUser.email, })
 
     expect(loginResponse.status).toBe(400)
-    expect(JSON.parse(loginResponse.text).errors[0].msg).toBe(error)
+    expect(loginResponse.body.errors[0].msg).toBe(error)
   })
 })
 
 describe('/api/auth/me', () => {
 
+  let loginResponse: Response
   let token: string
 
   beforeEach(async () => {
     await registerUser()
-    const loginResponse = await loginUser()
+    loginResponse = await loginUser()
     token = loginResponse.body.token
   })
 
@@ -186,9 +189,9 @@ describe('/api/auth/me', () => {
       {
         success: true,
         user: {
-          id: meResponse.body.user.id,
-          name: meResponse.body.user.name,
-          email: meResponse.body.user.email
+          id: loginResponse.body.user.id,
+          name: newUser.name,
+          email: newUser.email
         }
       }
     ))
