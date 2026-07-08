@@ -24,7 +24,7 @@ function countVowels(str) {
   if (typeof str !== 'string') {
     throw new Error('Input must be a string');
   }
-  const vowels = str.match(/[aeiouAEIOU]/g);
+  const vowels = str.match(/[aeiouyAEIOUY]/g);
   return vowels ? vowels.length : 0;
 }
 
