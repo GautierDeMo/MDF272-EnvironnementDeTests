@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { getRealm } from '../config/realm.js';
 import { randomUUID } from 'node:crypto'
+import {validationResult} from "express-validator";
 
 // @desc    Get all tags
 // @route   GET /api/tags
@@ -29,6 +30,11 @@ export const getTags = async (req: Request, res: Response) => {
 // @access  Private
 export const createTag = async (req: Request, res: Response) => {
   const { name, color } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
 
   try {
     const realm = await getRealm();
