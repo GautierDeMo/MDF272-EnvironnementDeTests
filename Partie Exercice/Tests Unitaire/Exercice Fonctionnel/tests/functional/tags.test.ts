@@ -1,17 +1,17 @@
 import request from 'supertest'
 import jwt from 'jsonwebtoken'
-import app from '../api/app'
-import {getRealm} from '../api/config/realm'
+import app from '../../api/app'
+import { getRealm } from '../../api/config/realm'
 import Realm from 'realm'
 
 const userId = '1234567890'
-const token = jwt.sign({id: userId}, process.env.JWT_SECRET as string, {
+const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
     expiresIn: '1h',
 })
 
 describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
     beforeAll(() => {
-        Realm.deleteFile({path: process.env.REALM_PATH})
+        Realm.deleteFile({ path: process.env.REALM_PATH })
     })
 
     afterAll(async () => {
@@ -63,7 +63,7 @@ describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
         test('rejette la requête sans token', async () => {
             const response = await request(app)
                 .post('/api/tags')
-                .send({name: 'Sans token', color: '#111111'})
+                .send({ name: 'Sans token', color: '#111111' })
 
             expect(response.status).toBe(401)
             expect(response.body.error).toMatch(/no token/i)
@@ -73,7 +73,7 @@ describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
             const response = await request(app)
                 .post('/api/tags')
                 .set('Authorization', 'Bearer token.invalide')
-                .send({name: 'Token invalide', color: '#222222'})
+                .send({ name: 'Token invalide', color: '#222222' })
 
             expect(response.status).toBe(401)
             expect(response.body.error).toMatch(/token failed/i)
@@ -85,7 +85,7 @@ describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
             await request(app)
                 .post('/api/tags')
                 .set('Authorization', `Bearer ${token}`)
-                .send({name: 'Tag A', color: '#aaaaaa'})
+                .send({ name: 'Tag A', color: '#aaaaaa' })
 
             const response = await request(app)
                 .get('/api/tags')
@@ -110,7 +110,7 @@ describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
             const createRes = await request(app)
                 .post('/api/tags')
                 .set('Authorization', `Bearer ${token}`)
-                .send({name: 'A supprimer', color: '#333333'})
+                .send({ name: 'A supprimer', color: '#333333' })
 
             const tagId = createRes.body.tag._id
 
@@ -132,15 +132,15 @@ describe("Tests fonctionnels de l'endpoint '/tags' de l'API", () => {
 
         test('retourne 401 si le tag appartient à un autre utilisateur', async () => {
             const otherToken = jwt.sign(
-                {id: 'un-autre-user-id'},
+                { id: 'un-autre-user-id' },
                 process.env.JWT_SECRET as string,
-                {expiresIn: '1h'}
+                { expiresIn: '1h' }
             )
 
             const createRes = await request(app)
                 .post('/api/tags')
                 .set('Authorization', `Bearer ${token}`)
-                .send({name: 'Pas a toi', color: '#444444'})
+                .send({ name: 'Pas a toi', color: '#444444' })
 
             const tagId = createRes.body.tag._id
 
