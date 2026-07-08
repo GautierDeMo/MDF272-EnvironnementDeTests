@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { getRealm } from '../config/realm.js';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto'
+import {validationResult} from "express-validator";
 
 // @desc    Get all tags
 // @route   GET /api/tags
@@ -9,14 +10,14 @@ export const getTags = async (req: Request, res: Response) => {
   try {
     const realm = await getRealm();
     const tags = realm.objects('Tag').filtered('userId == $0', req.user?.id);
-    
+
     const tagsJson = tags.map((tag: any) => ({
       _id: tag._id,
       name: tag.name,
       color: tag.color,
       userId: tag.userId,
     }));
-    
+
     res.json({ success: true, tags: tagsJson });
   } catch (err: any) {
     console.error(err.message);
@@ -30,13 +31,18 @@ export const getTags = async (req: Request, res: Response) => {
 export const createTag = async (req: Request, res: Response) => {
   const { name, color } = req.body;
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
+
   try {
     const realm = await getRealm();
-    
+
     let tag: any;
     realm.write(() => {
       tag = realm.create('Tag', {
-        _id: uuidv4(),
+        _id: randomUUID(),
         name,
         color,
         userId: req.user?.id,
@@ -44,8 +50,8 @@ export const createTag = async (req: Request, res: Response) => {
       });
     });
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       tag: {
         _id: tag._id,
         name: tag.name,
@@ -78,7 +84,7 @@ export const deleteTag = async (req: Request, res: Response) => {
     realm.write(() => {
       realm.delete(tag);
     });
-    
+
     res.json({ success: true, message: 'Tag removed' });
   } catch (err: any) {
     console.error(err.message);

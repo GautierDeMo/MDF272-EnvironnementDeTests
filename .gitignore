@@ -1,6 +1,14 @@
+Partie Exercice/Tests Unitaire/Exercice Fonctionnel/.env
+
+# IDE
 .DS_Store
+
+# NPM
 node_modules
 package-lock.json
 
 # Jest
 coverage
+
+# Realm database
+*.realm*

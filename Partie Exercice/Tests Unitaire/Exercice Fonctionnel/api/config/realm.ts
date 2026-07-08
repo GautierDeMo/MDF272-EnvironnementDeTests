@@ -1,9 +1,5 @@
 import Realm from 'realm';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const UserSchema = {
   name: 'User',
@@ -15,7 +11,7 @@ export const UserSchema = {
     name: 'string',
     createdAt: 'date',
   },
-};
+} satisfies Realm.ObjectSchema;
 
 export const TagSchema = {
   name: 'Tag',
@@ -27,7 +23,7 @@ export const TagSchema = {
     color: 'string',
     createdAt: 'date',
   },
-};
+} satisfies Realm.ObjectSchema;
 
 export const SubtaskSchema = {
   name: 'Subtask',
@@ -36,7 +32,7 @@ export const SubtaskSchema = {
     title: 'string',
     completed: { type: 'bool', default: false },
   },
-};
+} satisfies Realm.ObjectSchema;
 
 export const TaskSchema = {
   name: 'Task',
@@ -54,7 +50,7 @@ export const TaskSchema = {
     createdAt: 'date',
     updatedAt: 'date',
   },
-};
+} satisfies Realm.ObjectSchema;
 
 let realmInstance: Realm | null = null;
 
@@ -63,8 +59,8 @@ export const getRealm = async (): Promise<Realm> => {
     return realmInstance;
   }
 
-  const realmPath = path.join(__dirname, '../../taskmaster.realm');
-  
+  const realmPath = process.env.REALM_PATH ?? path.resolve(process.cwd(), 'taskmaster.realm');
+
   realmInstance = await Realm.open({
     path: realmPath,
     schema: [UserSchema, TagSchema, SubtaskSchema, TaskSchema],
