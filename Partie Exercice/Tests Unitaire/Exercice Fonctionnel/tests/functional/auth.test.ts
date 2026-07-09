@@ -1,6 +1,6 @@
 import request, { type Response } from 'supertest'
-import app from '../api/app'
-import { getRealm } from '../api/config/realm'
+import app from '../../api/app'
+import { getRealm } from '../../api/config/realm'
 import Realm from 'realm'
 
 const newUser = {

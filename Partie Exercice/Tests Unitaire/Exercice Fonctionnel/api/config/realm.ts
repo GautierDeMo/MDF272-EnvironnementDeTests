@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import path from 'path';
+import path from 'node:path';
 
 export const UserSchema = {
   name: 'User',
