@@ -5,7 +5,6 @@ Partie Exercice/Tests Unitaire/Exercice Fonctionnel/.env
 
 # NPM
 node_modules
-package-lock.json
 
 # Jest
 coverage
