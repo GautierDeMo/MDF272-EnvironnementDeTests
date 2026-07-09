@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const todoRoutes = require('./routes/todo');
 
 const app = express();
+app.disable('x-powered-by')
 app.use(bodyParser.json());
 
 // Routes

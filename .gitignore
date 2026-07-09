@@ -11,3 +11,6 @@ coverage
 
 # Realm database
 *.realm*
+
+#  ZASP
+session_zap*
