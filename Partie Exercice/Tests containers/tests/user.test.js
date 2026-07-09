@@ -36,14 +36,15 @@ describe('User API', () => {
         expect(result.test).toEqual(1)
     })
     // Test Unitaire ci-dessus
+
     // Test Fonctionnel ci-dessous
     it('Should create a user', async () => {
         const name = 'MaeldelaPluie'
         const response = await request(app)
         .post('/users')
         .send({ name })
-        .expect(200)
+        .expect(201)
 
-    expect(response.body.name).toBe(name)
+    expect(response.body.user.name).toBe(name)
     })
 })
